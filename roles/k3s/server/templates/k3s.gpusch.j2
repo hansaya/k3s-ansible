@@ -1,0 +1,15 @@
+apiVersion: kubescheduler.config.k8s.io/v1beta2
+kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: /etc/kubernetes/scheduler.conf
+extenders:
+- urlPrefix: "http://10.43.249.85:39999/scheduler"
+  filterVerb: filter
+  prioritizeVerb: priorities
+  bindVerb: bind
+  weight: 1
+  enableHTTPS: false
+  nodeCacheCapable: true
+  managedResources:
+  - name: elasticgpu.io/gpu-core
+  - name: elasticgpu.io/gpu-memory

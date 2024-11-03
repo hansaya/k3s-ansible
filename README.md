@@ -70,10 +70,15 @@ k3s_agent
 3. Edit `inventory/my-cluster/group_vars/all.yml` to best match your environment.\
 See, `inventory/sample/group_vars/README.md` for more details.
 
+4. Download the requirements
+```
+ansible-galaxy install -r requirements.yml
+```
+
 4. Provision your new cluster.
 
 ```bash
-ansible-playbook playbook/site.yml -i inventory/my-cluster/hosts.ini
+ansible-playbook playbook/site.yml -i inventory/noble/hosts.ini
 ```
 
 ## Kubeconfig
@@ -95,3 +100,8 @@ A few methods have been implemented to provide and manage this VIP.
 See `inventory/turingpi` for my example HA setup on my Turing Pi v1.
 See `inventory/sample/group_vars/README.md` for more details on variables.
 
+# Running commands on all nodes
+```
+ansible cube -b -m shell -a "lsblk -f"
+ansible -i inventory/my-cluster/hosts.ini k3s_cluster -b -m shell -a "apt-get install lvm2"
+```

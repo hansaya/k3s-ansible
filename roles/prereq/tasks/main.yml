@@ -4,6 +4,27 @@
     state: disabled
   when: ansible_distribution in ['CentOS', 'RedHat', 'Red Hat Enterprise Linux']
 
+- name: Set File max_user_watches limits
+  sysctl:
+    name: fs.inotify.max_user_watches
+    value: "2099999999"
+    state: present
+    reload: yes
+  
+- name: Set File max_user_instances limits
+  sysctl:
+    name: fs.inotify.max_user_instances
+    value: "2099999999"
+    state: present
+    reload: yes
+
+- name: Set File max_queued_events limits
+  sysctl:
+    name: fs.inotify.max_queued_events
+    value: "2099999999"
+    state: present
+    reload: yes
+
 - name: Enable IPv4 forwarding
   sysctl:
     name: net.ipv4.ip_forward
@@ -63,3 +84,45 @@
     state: latest
     update_cache: yes
   with_items: "{{ install_additional_packages | default([]) }}"
+
+- name: Enable additional services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: yes
+    masked: no
+  with_items: "{{ enable_additional_services | default([]) }}"
+
+- name: Start additional services
+  ansible.builtin.systemd:
+    state: started
+    name: "{{ item }}"
+  with_items: "{{ enable_additional_services | default([]) }}"
+
+- name: install custom facts module
+  include_role:
+    name: facts
+    apply:
+      tags:
+        - always
+  tags:
+    - always
+
+- name: install driver
+  include_role:
+    name: nvidia.nvidia_driver
+    apply:
+      tags:
+        - nvidia_driver
+  when: ansible_local.gpus.count
+  tags:
+    - always
+
+- name: install libnvidia-container
+  include_role:
+    name: libnvidia-container-tools
+    apply:
+      tags:
+        - libnvidia_container
+  when: ansible_local.gpus.count
+  tags:
+    - always
