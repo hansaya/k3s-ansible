@@ -118,3 +118,16 @@ Example:
 install_additional_packages:
   - nfs-common
 ```
+
+### Enable and start additional packages
+
+List out additional services to enable and start.
+
+- **enable_additional_services**: the default is `''`.
+
+Example:
+```
+# Enable openebs prerequisites 
+enable_additional_services:
+  - iscsid
+```
